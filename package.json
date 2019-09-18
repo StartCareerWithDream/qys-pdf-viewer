@@ -1,6 +1,6 @@
 {
   "name": "qys-pdf-viewer",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -52,5 +52,19 @@
   "description": "## Project setup ``` yarn install ```",
   "main": "index.js",
   "author": "Dreamcatcher",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StartCareerWithDream/qys-pdf-viewer.git"
+  },
+  "keywords": [
+    "pdfjs",
+    "pdfjs-dist",
+    "vue-pdf",
+    "qys-pdf"
+  ],
+  "bugs": {
+    "url": "https://github.com/StartCareerWithDream/qys-pdf-viewer/issues"
+  },
+  "homepage": "https://github.com/StartCareerWithDream/qys-pdf-viewer#readme"
 }
