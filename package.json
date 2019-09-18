@@ -1,7 +1,6 @@
 {
   "name": "qys-pdf-viewer",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.10",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -9,6 +8,11 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
+    "intersection-observer": "^0.7.0",
+    "less": "^3.10.3",
+    "less-loader": "^5.0.0",
+    "lodash": "^4.17.15",
+    "qys-pdf": "^1.0.1",
     "vue": "^2.6.10"
   },
   "devDependencies": {
@@ -29,7 +33,9 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
+    "rules": {
+      "no-console": "off"
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }
@@ -42,5 +48,9 @@
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "description": "## Project setup ``` yarn install ```",
+  "main": "index.js",
+  "author": "Dreamcatcher",
+  "license": "ISC"
 }

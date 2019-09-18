@@ -2,6 +2,9 @@
 node_modules
 /dist
 public
+/src/App.vue
+/src/main.js
+vue.config.js
 yarn.lock
 
 
