@@ -2,7 +2,8 @@
     <div class="pdf-document">
         <scroll-document v-bind="{ pages, pageCount, currentPage, scale }"
             v-slot="{ page, scale }">
-            <pdf-page-content v-bind="{ page, scale, currentPage, onlyCanvas, watermark, watermarkText }">
+            <pdf-page-content 
+                v-bind="{ page, scale, currentPage, onlyCanvas, watermark, watermarkText }">
                 <template slot-scope="scope">
                     <slot v-bind="scope"></slot>
                 </template>

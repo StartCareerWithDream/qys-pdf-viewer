@@ -59,8 +59,6 @@ export default {
                     if(this.options) {
                         params = Object.assign(params, this.options)
                     }
-
-                    console.log('%c⧭', 'color: #ffcc00', params)
                     this.pages = [];
                     this.currentPage = 0;
                     this.pageCount = 0;
@@ -82,7 +80,7 @@ export default {
                     this.$emit('document-rendered');
                 });
             } catch (error) {
-                this.$emit('document-error', error);
+                this.$emit('document-render-error', error);
             }
         },
 

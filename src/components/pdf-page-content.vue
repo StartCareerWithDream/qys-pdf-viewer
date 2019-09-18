@@ -29,7 +29,7 @@ export default {
             default: `杨旺旺-${new Date().toLocaleString()}`
         }
     },
-    inject: ['on-drop', 'on-drag-over', 'on-drag-leave'],
+    inject: ['on-drop', 'on-drag-over', 'on-drag-leave', 'page-rendered', 'page-render-error'],
     data () {
         return {
             renderTask: null,
@@ -102,7 +102,7 @@ export default {
             this.renderTask.draw().then(() => {
                 this.loading = false;
                 this.loaded = true;
-                this.$emit('pdf-rendered', this.pageNumber);
+                this['pdf-rendered'].call(this, this.pageNumber);
                 // 绘制水印
                 if (this.watermark) {
                     const context = this.renderTask.canvas.getContext("2d");
@@ -110,7 +110,7 @@ export default {
                 }
             }).catch((error) => {
                 this.loading = false;
-                this.$emit('pdf-render-error', this.pageNumber, error);
+                this['pdf-render-error'].call(this, this.pageNumber, error)
             });
         },
 

@@ -41,7 +41,9 @@ export default {
       'update-page-number': this.updateCurrentPage,
       'on-drop': this.onDrop,
       'on-drag-over': this.onDragOver,
-      'on-drag-leave': this.onDragLeave
+      'on-drag-leave': this.onDragLeave,
+      'page-rendered': this.onPageRendered,
+      'page-render-error': this.onPageRenderError
     };
   },
   watch: {
@@ -71,6 +73,14 @@ export default {
     onDragLeave(e, pageNo) {
         this.$emit('on-drag-leave', e, pageNo)
     },
+
+    onPageRendered(pageNo) {
+      this.$emit('page-rendered', pageNo)
+    },
+
+    onPageRenderError(pageNo, error) {
+      this.$emit('page-render-error', pageNo, error)
+    }
   },
 };
 </script>
