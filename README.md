@@ -49,6 +49,10 @@ listeners: {
    page-render-error: (pageNo) => void
 }
 
+$slot
+slot-scope="{ pageNumber }"
+提供插槽，插槽具有页码信息
+
 
  <pdf :url="`/document/download/${id}?QID=5264b718-764e-45cf-8c5a-940b3aefc991`"
      watermark
