@@ -25,5 +25,46 @@ yarn run test
 yarn run lint
 ```
 
+使用方式
+```
+props: {
+  url: string // pdf地址 
+  cMapUrl: string // 字体解析包的请求地址 
+  visibleHeader: boolean // 是否渲染头部控制区域（缩放、翻页等 后期可提供插槽）
+  watermark: boolean // 是否支持水印 
+  watermarkText: string // 水印文字
+  onlyCanvas: boolean // 只渲染 canvas
+}
+
+listeners: {
+   // 拖动事件相关
+   on-drop: (e, pageNo) => void
+   on-drag-over: (e, pageNo) => void
+   on-drag-leave: (e, pageNo) => void
+   // 文档渲染事件
+   document-rendered： （）=> void // 渲染成功
+   document-render-error: () => void // 渲染失败
+   // 单页渲染事件
+   page-rendered: (pageNo) => void
+   page-render-error: (pageNo) => void
+}
+
+
+ <pdf :url="`/document/download/${id}?QID=5264b718-764e-45cf-8c5a-940b3aefc991`"
+     watermark
+     visible-header
+     @on-drop="onDrop"
+     @on-drag-over="onDrop"
+     @on-drag-leave="onDrop">
+    <template slot-scope="scope">
+        <div class="aaa"
+             draggable>
+            {{scope.pageNumber}}
+        </div>
+    </template>
+</pdf>
+```
+
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
