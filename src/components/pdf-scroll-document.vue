@@ -3,10 +3,13 @@
          ref="pdf-scroll-document"
          v-scroll.immediate="updateScrollBounds">
         <template v-for="(page, index) in pages">
-            <pdf-scroll-page v-bind="{ page, scrollTop, clientHeight, currentPage, scale }"
+            <pdf-scroll-page v-bind="{ page, scrollTop, clientHeight, currentPage, scale, isToBottom }"
                              @update-scroll-top="onUpdateScrollTop"
+                             v-on="$listeners"
                              :key="index">
-                <slot v-bind="{ page, scale }"></slot>
+                <template v-slot="scope">
+                   <slot v-bind="{ page, scale, ...scope }"></slot>
+                </template>
             </pdf-scroll-page>
         </template>
     </div>
@@ -29,18 +32,17 @@ export default {
     return {
       scrollTop: 0,
       clientHeight: 0,
-      pageSetting: {
-        a: 1,
-      },
+      isToBottom: false
     };
   },
-  inject: ['pages-fetch'],
   directives: { scroll },
   methods: {
     /** 更新当前滚动距离 */
     updateScrollBounds() {
       const { scrollTop, clientHeight } = this.$el;
+      this.isToBottom = this.scrollTop < scrollTop;
       this.scrollTop = scrollTop;
+
       this.clientHeight = clientHeight;
     },
 

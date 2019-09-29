@@ -31,6 +31,7 @@ function bind(el, { value, modifiers }, vnode) {
   } else {
     const observer = createObserver(el, vnode, modifiers, () => {
       const callback = value;
+      console.log('bindings', el)
       if (typeof callback === 'function') callback();
     });
     instances.set(el, { observer });
@@ -46,7 +47,6 @@ function update(el, { value, oldValue }, vnode) {
 }
 
 function unbind(el) {
-  log('unbind', el);
   if (instances.has(el)) {
     const { observer } = instances.get(el);
     disconnectObserver(observer, el);

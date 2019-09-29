@@ -5,7 +5,7 @@ module.exports = {
     devServer: {
         port: 8086,
         open: true,
-        proxy: 'http://privapp.qiyuesuo.cn'
+        proxy: 'http://privapp.qiyuesuo.me'
     },
     baseUrl: '/',
     runtimeCompiler: true,

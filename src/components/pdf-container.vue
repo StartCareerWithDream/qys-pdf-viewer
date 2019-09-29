@@ -1,7 +1,8 @@
 <template>
     <div class="pdf-viewer-container">
-      <!-- 头部 -->
-        <div class="pdf-viewer-header" v-if="visibleHeader">
+        <!-- 头部 -->
+        <div class="pdf-viewer-header"
+             v-if="visibleHeader">
             <button @click="currentPage --;">-</button>
             {{currentPage}}
             <button @click="currentPage++;">+</button>
@@ -9,11 +10,15 @@
 
             <button @click="scale -= 0.1">scale --</button>
             <button @click="scale += 0.1">scale ++</button>
+            <slot name="header"></slot>
         </div>
         <!-- 文档内容 -->
-        <pdf-document class="pdf-viewer-body" v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermark, watermarkText }">
-            <template slot-scope="scope">
-               <slot v-bind="scope"></slot>
+        <pdf-document class="pdf-viewer-body"
+                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText }"
+                      v-on="$listeners"
+                      @update-page-number="updateCurrentPage">
+            <template v-slot="scope">
+                <slot v-bind="scope"></slot>
             </template>
         </pdf-document>
     </div>
@@ -24,64 +29,33 @@ import PdfData from './pdf-data';
 import PdfDocument from './pdf-document';
 
 export default {
-  components: { PdfDocument },
-  name: 'PdfViewerContainer',
-  mixins: [PdfData],
-  data() {
-    return {
-      currentPage: 1,
-      scale: 1,
-    };
-  },
-  props: {
-    visibleHeader: Boolean
-  },
-  provide() {
-    return {
-      'update-page-number': this.updateCurrentPage,
-      'on-drop': this.onDrop,
-      'on-drag-over': this.onDragOver,
-      'on-drag-leave': this.onDragLeave,
-      'page-rendered': this.onPageRendered,
-      'page-render-error': this.onPageRenderError
-    };
-  },
-  watch: {
-    currentPage: {
-      handler(nv) {
-        if (nv && nv === this.pages.length) {
-          this.fetchPages(nv + 1);
-        }
-      },
+    components: { PdfDocument },
+    name: 'PdfViewerContainer',
+    mixins: [PdfData],
+    data () {
+        return {
+            currentPage: 1,
+            scale: 1,
+        };
     },
-  },
-  methods: {
-    /** 更新页码 */
-    updateCurrentPage(pageNo) {
-      this.currentPage = pageNo;
+    props: {
+        visibleHeader: Boolean
     },
-
-    /** 监听拖动时间 */
-    onDrop(e, pageNo) {
-        this.$emit('on-drop', e, pageNo)
+    watch: {
+        currentPage: {
+            handler (nv) {
+                if (nv && nv === this.pages.length) {
+                    this.fetchPages(nv + 1);
+                }
+            },
+        },
     },
-
-    onDragOver(e, pageNo) {
-        this.$emit('on-drag-over', e, pageNo)
+    methods: {
+        /** 更新页码 */
+        updateCurrentPage (pageNo) {
+            this.currentPage = pageNo;
+        },
     },
-
-    onDragLeave(e, pageNo) {
-        this.$emit('on-drag-leave', e, pageNo)
-    },
-
-    onPageRendered(pageNo) {
-      this.$emit('page-rendered', pageNo)
-    },
-
-    onPageRenderError(pageNo, error) {
-      this.$emit('page-render-error', pageNo, error)
-    }
-  },
 };
 </script>
 

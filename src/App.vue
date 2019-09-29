@@ -2,20 +2,14 @@
     <div id="app">
         <input type="text"
                v-model="id">
-        <div draggable> 1234</div>
         <pdf v-if="id"
-             :url="`/document/download/${id}?QID=5264b718-764e-45cf-8c5a-940b3aefc991`"
-             watermark
+             :url="`/document/download/${id}?QID=844c644b-0f6d-4b37-bbb7-9835d129a8c6`"
+             watermark-text="杨旺旺 2019-07-02 08:08:00 9015"
              visible-header
              @on-drop="onDrop"
              @on-drag-over="onDrop"
-             @on-drag-leave="onDrop">
-            <template slot-scope="scope">
-                <div class="aaa"
-                     draggable>
-                    {{scope.pageNumber}}
-                </div>
-            </template>
+             @on-drag-leave="onDrop"
+             @page-rendered="onPageRendered">
         </pdf>
     </div>
 </template>
@@ -28,7 +22,7 @@ export default {
     data () {
         return {
             url: '',
-            id: '2611511610992362204'
+            id: '2615137425385963557'
         }
     },
     components: {
@@ -60,6 +54,10 @@ export default {
             }
         },
 
+        onPageRendered(pageNo) {
+            console.log(pageNo)
+        },
+
         handlerBlobToUrl (data) {
             let blob = null,
                 binaryData = [];
@@ -88,8 +86,5 @@ export default {
     text-align: center;
     color: #2c3e50;
     background: #f2f2f2;
-}
-.aaa {
-    position: absolute;
 }
 </style>

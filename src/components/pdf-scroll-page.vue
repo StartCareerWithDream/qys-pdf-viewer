@@ -3,12 +3,16 @@
          :style="elementStyle"
          ref="pdf-scroll-page">
         <slot v-bind="{ page, scale }"></slot>
+        <pdf-skeleton v-if="showSkeleton"></pdf-skeleton>
+        <span class="page-number-content">{{pageNumber}}</span>
     </div>
 </template>
 
 <script>
+import PdfSkeleton from './pdf-skeleton'
 
 export default {
+  components: { PdfSkeleton },
   name: 'PdfScrollPage',
   props: {
     page: Object,
@@ -16,15 +20,16 @@ export default {
     clientHeight: Number,
     currentPage: Number,
     scale: Number,
+    isToBottom: Boolean
   },
   data() {
     return {
       offsetHeight: 0,
       offsetTop: 0,
       clientWidth: 0,
+      showSkeleton: true
     };
   },
-  inject: ['update-page-number'],
   mounted() {
     this.updateElementBounds();
   },
@@ -42,9 +47,9 @@ export default {
       const halfHeight = (offsetHeight / 2);
       const halfScreen = (clientHeight / 2);
       const delta = offsetHeight >= halfScreen ? halfScreen : halfHeight;
-      const threshold = scrollTop + delta;
-
-      return offsetTop < threshold && bottom >= threshold;
+      const threshold = scrollTop + delta * 2;
+      const direction = this.isToBottom ? bottom >= threshold : bottom >= scrollTop
+      return offsetTop < threshold  && direction;
     },
 
     bottom() {
@@ -71,7 +76,7 @@ export default {
     isFocus: {
       handler(nv) {
         if (nv) {
-          this['update-page-number'].call(null, this.pageNumber);
+            this.$listeners['update-page-number'] && this.$listeners['update-page-number'](this.pageNumber)
         }
       },
     },
@@ -92,6 +97,10 @@ export default {
       this.offsetHeight = offsetHeight;
       this.clientWidth = clientWidth;
     },
+
+    triggerSkeleton(visible) {
+      this.showSkeleton = visible;
+    }
   },
 };
 </script>
@@ -101,5 +110,30 @@ export default {
     margin: 0 auto 24px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px 0px;
     position: relative;
+    background: #fff;
+
+    &:before {
+      content: '';
+      display: block;
+      border-bottom: 24px solid #ccc;
+      border-right: 24px solid #ccc;
+      border-left: 24px solid transparent;
+      border-top: 24px solid transparent;
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      z-index: 1;
+    }
+
+    .page-number-content {
+        position: absolute;
+        bottom: 3px;
+        right: 9px;
+        z-index: 1;
+        color: #fff;
+        user-select: none;
+    }
+         
+    
 }
 </style>

@@ -31,7 +31,6 @@ props: {
   url: string // pdf地址 
   cMapUrl: string // 字体解析包的请求地址 
   visibleHeader: boolean // 是否渲染头部控制区域（缩放、翻页等 后期可提供插槽）
-  watermark: boolean // 是否支持水印 
   watermarkText: string // 水印文字
   onlyCanvas: boolean // 只渲染 canvas
 }
@@ -55,7 +54,6 @@ slot-scope="{ pageNumber }"
 
 
  <pdf :url="`/document/download/${id}?QID=5264b718-764e-45cf-8c5a-940b3aefc991`"
-     watermark
      visible-header
      @on-drop="onDrop"
      @on-drag-over="onDrop"

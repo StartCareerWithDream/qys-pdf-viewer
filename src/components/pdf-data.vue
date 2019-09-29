@@ -24,7 +24,6 @@ export default {
             default:  null
         },
         onlyCanvas: Boolean,
-        watermark: Boolean,
         watermarkText: String
     },
     data () {
@@ -69,6 +68,9 @@ export default {
             },
             immediate: true
         }
+    },
+    beforeDestroy() {
+        this.pages = [];
     },
     methods: {
         /** 获取pdf文档 */

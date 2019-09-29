@@ -1,14 +1,12 @@
 <template>
     <div class="pdf-page-content"
-         :class="{ 'is-loading': !loaded }"
-         v-visible="renderPdf"
          ref="pdf-content"
+         v-visible="renderPdf"
          ondragstart='return false;'
-         @drop="onDrop($event, pageNumber)"
-         @dragover="onDragOver($event, pageNumber)"
-         @dragleave="onDragleave($event, pageNumber)">
+         @drop="$listeners['on-drop'] && $listeners['on-drop']($event, pageNumber)"
+         @dragover="$listeners['on-drag-over'] && $listeners['on-drag-over']($event, pageNumber)"
+         @dragleave="$listeners['on-drag-leave'] && $listeners['on-drag-leave']($event, pageNumber)">
         <slot v-bind="{ pageNumber }"></slot>
-        <span class="page-number-content">{{pageNumber}}</span>
     </div>
 </template>
 
@@ -23,13 +21,8 @@ export default {
         scale: Number,
         currentPage: Number,
         onlyCanvas: Boolean,
-        watermark: Boolean,
-        watermarkText: {
-            type: String,
-            default: `杨旺旺-${new Date().toLocaleString()}`
-        }
+        watermarkText: String
     },
-    inject: ['on-drop', 'on-drag-over', 'on-drag-leave', 'page-rendered', 'page-render-error'],
     data () {
         return {
             renderTask: null,
@@ -52,24 +45,19 @@ export default {
         scale () {
             this.updatePdfRender();
         },
+        // 处理当前页激活时渲染 10页前的页码销毁
+        currentPage: {
+            handler(nv) {
+                if(nv === this.pageNumber) {
+                    this.updatePdfRender()
+                } else if(this.pageNumber <= nv - 10) {
+                    this.resetRenderTask()
+                }
+            },
+        }
     },
     directives: { visible },
     methods: {
-
-        /***** DOM事件处理 ***** */
-
-        onDrop(e, pageNo) {
-            this['on-drop'].call(this, e, pageNo)
-        },
-
-        onDragOver(e, pageNo) {
-            this['on-drag-over'].call(this, e, pageNo)
-        },
-
-        onDragleave(e, pageNo) {
-            this['on-drag-leave'].call(this, e, pageNo)
-        },
-
         /**
         * 绘制水印
         */
@@ -88,7 +76,6 @@ export default {
         /** 使用默认方式渲染 */
         renderPageView () {
             const viewport = this.page.getViewport({ scale: this.scale })
-            console.log('%c⧭', 'color: #ffa280', viewport)
             // 渲染任务 通过onlyCanvas 配置是否需要html DOM节点
             this.renderTask = new pdfjsViewer.PDFPageView({
                 container: this.$refs['pdf-content'],
@@ -102,15 +89,17 @@ export default {
             this.renderTask.draw().then(() => {
                 this.loading = false;
                 this.loaded = true;
-                this['pdf-rendered'].call(this, this.pageNumber);
+                // 关闭骨架屏样式
+                this.$parent.triggerSkeleton(false);
+                this.$listeners['page-rendered'] && this.$listeners['page-rendered'].call(null, this.pageNumber)
                 // 绘制水印
-                if (this.watermark) {
+                if (this.watermarkText) {
                     const context = this.renderTask.canvas.getContext("2d");
                     this.paintWaterMark(context)
                 }
             }).catch((error) => {
                 this.loading = false;
-                this['pdf-render-error'].call(this, this.pageNumber, error)
+                this.$listeners['page-render-error'] && this.$listeners['page-render-error'].call(null, this.pageNumber, error)
             });
         },
 
@@ -124,27 +113,34 @@ export default {
         /** 更新 pdfscale */
         updatePdfRender () {
             if (!this.renderTask) return;
+            this.$parent.triggerSkeleton(true);
             this.renderTask.update(this.scale);
             this.renderTask.draw().then(() => {
                 this.loading = false;
-                this.$emit('pdf-rendered', this.pageNumber);
+                this.$parent.triggerSkeleton(false);
                 // 绘制水印
-                if (this.watermark) {
+                if (this.watermarkText) {
                     const context = this.renderTask.canvas.getContext("2d");
                     this.paintWaterMark(context)
                 }
             }).catch((error) => {
                 this.loading = false;
-                this.$emit('pdf-render-error', this.pageNumber, error);
+                this.$listeners['page-render-error'] && this.$listeners['page-render-error'].call(null, this.pageNumber, error)
             });
         },
 
         /** 销毁pdf实例 */
         destoryRenderTask () {
             if (!this.renderTask) return;
-            this.renderTask.destroy();
+            this.renderTask.destory();
             this.renderTask = null;
         },
+
+        /** 重置渲染实例 销毁DOM节点 */
+        resetRenderTask() {
+            if(!this.renderTask) return;
+            this.renderTask.reset();
+        }
     },
     beforeDestroy () {
         this.destoryRenderTask();
@@ -155,29 +151,5 @@ export default {
 <style lang="less" scoped>
 .pdf-page-content {
     position: relative;
-
-    &.is-loading {}
-
-    .page-number-content {
-        position: absolute;
-        bottom: 3px;
-        right: 9px;
-        z-index: 1;
-        color: #fff;
-        user-select: none;
-    }
-
-    &:before {
-      content: '';
-      display: block;
-      border-bottom: 24px solid #ccc;
-      border-right: 24px solid #ccc;
-      border-left: 24px solid transparent;
-      border-top: 24px solid transparent;
-      position: absolute;
-      bottom: -1px;
-      right: -1px;
-      z-index: 1;
-    }
 }
 </style>
