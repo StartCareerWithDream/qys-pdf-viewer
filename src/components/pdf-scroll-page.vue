@@ -64,7 +64,11 @@ export default {
     },
 
     elementStyle() {
-      const { height, width } = this.viewport;
+      let { height, width } = this.viewport;
+      if(width > 800) {
+        height = 800 / width * height;
+        width = 800
+      }
       return { height: `${height}px`, width: `${width}px` };
     },
 

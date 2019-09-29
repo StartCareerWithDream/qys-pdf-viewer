@@ -4,8 +4,7 @@ const { log } = console;
 
 const instances = new WeakMap();
 
-function disconnectObserver(observer, el) {
-  log('disconnect', el);
+function disconnectObserver(observer) {
   if (observer) observer.disconnect();
 }
 
@@ -31,7 +30,6 @@ function bind(el, { value, modifiers }, vnode) {
   } else {
     const observer = createObserver(el, vnode, modifiers, () => {
       const callback = value;
-      console.log('bindings', el)
       if (typeof callback === 'function') callback();
     });
     instances.set(el, { observer });

@@ -36,10 +36,13 @@ export default {
         },
         viewport () {
             const cssDpi = 96 / 72;
-            const scale = this.scale * cssDpi;
+            let scale = this.scale * cssDpi;
             const viewport = this.page.getViewport({ scale }).clone({ scale });
             return viewport;
         },
+        optimalScale() {
+            return 800 / this.viewport.width * this.scale;
+        }
     },
     watch: {
         scale () {
@@ -75,13 +78,12 @@ export default {
 
         /** 使用默认方式渲染 */
         renderPageView () {
-            const viewport = this.page.getViewport({ scale: this.scale })
             // 渲染任务 通过onlyCanvas 配置是否需要html DOM节点
             this.renderTask = new pdfjsViewer.PDFPageView({
                 container: this.$refs['pdf-content'],
                 id: this.pageNumber,
-                scale: this.scale,
-                defaultViewport: viewport,
+                scale: this.optimalScale,
+                defaultViewport: this.page.getViewport(this.optimalScale),
                 textLayerFactory: this.onlyCanvas ? null : new pdfjsViewer.DefaultTextLayerFactory(),
                 annotationLayerFactory: this.onlyCanvas ? null : new pdfjsViewer.DefaultAnnotationLayerFactory(),
             });
@@ -114,7 +116,7 @@ export default {
         updatePdfRender () {
             if (!this.renderTask) return;
             this.$parent.triggerSkeleton(true);
-            this.renderTask.update(this.scale);
+            this.renderTask.update(this.optimalScale);
             this.renderTask.draw().then(() => {
                 this.loading = false;
                 this.$parent.triggerSkeleton(false);
@@ -132,7 +134,7 @@ export default {
         /** 销毁pdf实例 */
         destoryRenderTask () {
             if (!this.renderTask) return;
-            this.renderTask.destory();
+            this.renderTask.destory && this.renderTask.destory();
             this.renderTask = null;
         },
 

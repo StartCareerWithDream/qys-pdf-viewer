@@ -3,7 +3,7 @@
         <input type="text"
                v-model="id">
         <pdf v-if="id"
-             :url="`/document/download/${id}?QID=844c644b-0f6d-4b37-bbb7-9835d129a8c6`"
+             :url="`/document/download/${id}?QID=3bb7615b-c4e9-492f-aec2-42ddb1147ed8`"
              watermark-text="杨旺旺 2019-07-02 08:08:00 9015"
              visible-header
              @on-drop="onDrop"
@@ -22,7 +22,7 @@ export default {
     data () {
         return {
             url: '',
-            id: '2615137425385963557'
+            id: '2615756051923599571' // 2615756052712128725
         }
     },
     components: {

@@ -54,7 +54,7 @@ export default {
         /** 更新页码 */
         updateCurrentPage (pageNo) {
             this.currentPage = pageNo;
-        },
+        }
     },
 };
 </script>
