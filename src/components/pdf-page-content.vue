@@ -65,11 +65,11 @@ export default {
         * 绘制水印
         */
         paintWaterMark (ctx) {
-            ctx.font = '18px Microsoft YaHei';
+            ctx.font = '24px Microsoft YaHei';
             ctx.fillStyle = 'rgba(211, 210, 211, 0.3';
             for (let i = 0; i < 100; i++) {
                 ctx.save();
-                ctx.translate(300 * (i % 5), 280 * parseInt((i / 5).toString()));
+                ctx.translate(400 * (i % 5), 373 * parseInt((i / 5).toString()));
                 ctx.rotate(-(Math.PI * (1 / 4)));
                 ctx.fillText(this.watermarkText, 0, 0);
                 ctx.restore();
