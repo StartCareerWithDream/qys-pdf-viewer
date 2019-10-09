@@ -20,7 +20,8 @@ export default {
     clientHeight: Number,
     currentPage: Number,
     scale: Number,
-    isToBottom: Boolean
+    isToBottom: Boolean,
+    maxWidth: Number
   },
   data() {
     return {
@@ -65,11 +66,8 @@ export default {
 
     elementStyle() {
       let { height, width } = this.viewport;
-      if(width > 800) {
-        height = 800 / width * height;
-        width = 800
-      }
-      return { height: `${height}px`, width: `${width}px` };
+      height = this.maxWidth / width * height;
+      return { height: `${height}px`, width: `${this.maxWidth}px` };
     },
 
     scrollBottom() {

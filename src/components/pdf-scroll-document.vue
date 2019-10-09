@@ -3,7 +3,7 @@
          ref="pdf-scroll-document"
          v-scroll.immediate="updateScrollBounds">
         <template v-for="(page, index) in pages">
-            <pdf-scroll-page v-bind="{ page, scrollTop, clientHeight, currentPage, scale, isToBottom }"
+            <pdf-scroll-page v-bind="{ page, scrollTop, clientHeight, currentPage, scale, isToBottom, maxWidth }"
                              @update-scroll-top="onUpdateScrollTop"
                              v-on="$listeners"
                              :key="index">
@@ -27,6 +27,7 @@ export default {
     pages: Array,
     currentPage: Number,
     scale: Number,
+    maxWidth: Number
   },
   data() {
     return {

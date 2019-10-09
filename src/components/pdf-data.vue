@@ -53,7 +53,7 @@ export default {
                     let params = {
                         url: this.url,
                         cMapUrl: this.cMapUrl,
-                        cMapPacked: true
+                        cMapPacked: true,
                     }
                     if(this.options) {
                         params = Object.assign(params, this.options)
@@ -75,6 +75,7 @@ export default {
     methods: {
         /** 获取pdf文档 */
         async getDocuments () {
+            console.log(this.loadingTask.promise)
             try {
                 this.loadingTask.promise.then(async (pdfDocument) => {
                     this.pdfDocument = pdfDocument;
@@ -82,6 +83,7 @@ export default {
                     this.$emit('document-rendered');
                 });
             } catch (error) {
+                console.log('%c⧭', 'color: #aa00ff', error)
                 this.$emit('document-render-error', error);
             }
         },

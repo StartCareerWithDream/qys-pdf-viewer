@@ -14,7 +14,7 @@
         </div>
         <!-- 文档内容 -->
         <pdf-document class="pdf-viewer-body"
-                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText }"
+                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText, maxWidth }"
                       v-on="$listeners"
                       @update-page-number="updateCurrentPage">
             <template v-slot="scope">
@@ -39,7 +39,11 @@ export default {
         };
     },
     props: {
-        visibleHeader: Boolean
+        visibleHeader: Boolean,
+        maxWidth: {
+            type: Number,
+            default: 800
+        }
     },
     watch: {
         currentPage: {

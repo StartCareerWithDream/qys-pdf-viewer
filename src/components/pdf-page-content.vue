@@ -21,7 +21,8 @@ export default {
         scale: Number,
         currentPage: Number,
         onlyCanvas: Boolean,
-        watermarkText: String
+        watermarkText: String,
+        maxWidth: Number
     },
     data () {
         return {
@@ -41,7 +42,7 @@ export default {
             return viewport;
         },
         optimalScale() {
-            return 800 / this.viewport.width * this.scale;
+            return this.maxWidth / this.viewport.width * this.scale;
         }
     },
     watch: {
@@ -79,6 +80,8 @@ export default {
         /** 使用默认方式渲染 */
         renderPageView () {
             // 渲染任务 通过onlyCanvas 配置是否需要html DOM节点
+
+            console.log('%c⧭', 'color: #1d5673', this.optimalScale)
             this.renderTask = new pdfjsViewer.PDFPageView({
                 container: this.$refs['pdf-content'],
                 id: this.pageNumber,

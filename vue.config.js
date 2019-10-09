@@ -2,11 +2,11 @@
 var CopyWebpackPlugin = require("copy-webpack-plugin")
 
 module.exports = {
-    devServer: {
-        port: 8086,
-        open: true,
-        proxy: 'http://privapp.qiyuesuo.cn'
-    },
+    // devServer: {
+    //     port: 8086,
+    //     open: true,
+    //     proxy: 'http://privapp.qiyuesuo.cn'
+    // },
     baseUrl: '/',
     runtimeCompiler: true,
     productionSourceMap: false,

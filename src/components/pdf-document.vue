@@ -1,10 +1,10 @@
 <template>
     <div class="pdf-document">
         <scroll-document v-if="pages.length"
-                         v-bind="{ pages, pageCount, currentPage, scale }"
+                         v-bind="{ pages, pageCount, currentPage, scale, maxWidth }"
                          v-slot="{ page, scale }"
                          v-on="$listeners">
-            <pdf-page-content v-bind="{ page, scale, currentPage, onlyCanvas, watermarkText }"
+            <pdf-page-content v-bind="{ page, scale, currentPage, onlyCanvas, watermarkText, maxWidth }"
                               v-on="$listeners">
                 <template v-slot="scope">
                     <slot v-bind="scope"></slot>
@@ -28,7 +28,8 @@ export default {
         scale: Number,
         currentPage: Number,
         onlyCanvas: Boolean,
-        watermarkText: String
+        watermarkText: String,
+        maxWidth: Number
     },
     components: { ScrollDocument, PdfPageContent, PdfSkeleton },
 };
