@@ -1,12 +1,26 @@
+<!-- 模拟骨架屏 -->
 <template>
     <div class="pdf-skeleton-container">
-        <div class="skeleton-item" v-for="index in 24" :key="index"></div>
+        <div class="skeleton-item" v-for="index in lines" :key="index"></div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'PDFSkeketonContainer'
+    name: 'PDFSkeketonContainer',
+    props: {
+        height: {
+            type: Number,
+            default: 0
+        }
+    },
+    computed: {
+        lines() {
+            const verticalPadding = 56 * 2;
+            const itemHeight = 16 + 32;
+            return this.height ? Math.ceil((this.height - verticalPadding - 16) / itemHeight) : 20
+        }
+    },
 }
 </script>
 
@@ -20,7 +34,7 @@ export default {
 
     .skeleton-item {
         background: #f2f2f2;
-        height: 18px;
+        height: 16px;
         border-radius: 4px;
         background: #f2f2f2;
         position: relative;
@@ -30,7 +44,7 @@ export default {
             content: "";
             display: block;
             width: 300px;
-            height: 20px;
+            height: 16px;
             background: linear-gradient(to right, #f2f2f2, #e5e7ea, #f2f2f2);
             position: absolute;
             top: 0;
@@ -39,7 +53,7 @@ export default {
         }
 
         + .skeleton-item {
-            margin-top: 16px;
+            margin-top: 32px;
         }
 
         &:nth-child(4n - 3) {

@@ -9,7 +9,7 @@ const pageRange = (start, end) => {
     return Array(last - start).fill(0).map((v, i) => i + start);
 };
 
-const PAGE_SIZE = 10;
+// const PAGE_SIZE = 10;
 
 export default {
     name: 'PdfData',
@@ -21,10 +21,19 @@ export default {
         },
         options: {
             type: Object,
-            default:  null
+            default: null
         },
-        onlyCanvas: Boolean,
-        watermarkText: String
+        onlyCanvas: {
+            type: Boolean,
+            default: true
+        },
+        watermarkText: String,
+        demensions: {
+            type: Array,
+            default: () => { return [] }
+        },
+        imageBaseUrl: String,
+        isImage: Boolean
     },
     data () {
         return {
@@ -34,32 +43,27 @@ export default {
             pages: [],
         };
     },
-    provide () {
-        return {
-            'pages-fetch': this.fetchPages,
-        };
-    },
     watch: {
         pageCount: {
             handler (nv) {
-                if (nv) {
+                if (nv && !this.isImage) {
                     this.fetchPages();
                 }
             },
         },
         url: {
-            handler(nv) {
-                if(nv) {
+            handler (nv) {
+                if (nv && !this.isImage) {
                     let params = {
                         url: this.url,
                         cMapUrl: this.cMapUrl,
                         cMapPacked: true,
                     }
-                    if(this.options) {
+                    if (this.options) {
                         params = Object.assign(params, this.options)
                     }
                     this.pages = [];
-                    this.currentPage = 0;
+                    this.currentPage = 1;
                     this.pageCount = 0;
                     this.loadingTask = null;
                     this.loadingTask = pdfjsLib.getDocument(params);
@@ -67,15 +71,20 @@ export default {
                 }
             },
             immediate: true
+        },
+        'isImage': {
+            handler (nv) {
+               if(nv) this.getImageSet()
+            },
+            immediate: true
         }
     },
-    beforeDestroy() {
+    beforeDestroy () {
         this.pages = [];
     },
     methods: {
         /** 获取pdf文档 */
         async getDocuments () {
-            console.log(this.loadingTask.promise)
             try {
                 this.loadingTask.promise.then(async (pdfDocument) => {
                     this.pdfDocument = pdfDocument;
@@ -83,7 +92,6 @@ export default {
                     this.$emit('document-rendered');
                 });
             } catch (error) {
-                console.log('%c⧭', 'color: #aa00ff', error)
                 this.$emit('document-render-error', error);
             }
         },
@@ -99,15 +107,45 @@ export default {
         },
 
         /** 加载pdf数据 每次加载10页 PAGE_SIZE */
-        async fetchPages (pageNo = 1) {
+        async fetchPages () {
             try {
                 if (!this.pageCount) return;
                 if (this.pageCount && this.pageCount === this.pages.length) return;
-                const endNo = Math.min(Math.max(pageNo, (pageNo + PAGE_SIZE)), this.pageCount);
-                const partsOfPages = await this.getPages(this.pdfDocument, pageNo, endNo);
-                this.pages.splice(pageNo - 1, 0, ...partsOfPages);
+                // const start = this.pages.length + 1;
+                // const endNo = Math.min(Math.max(pageNo, (pageNo + PAGE_SIZE)), this.pageCount);
+                const partsOfPages = await this.getPages(this.pdfDocument, 1, this.pageCount);
+                // this.pages.splice(0, 0, ...partsOfPages);
+                this.pages = partsOfPages;
             } catch (error) {
                 console.log(error);
+            }
+        },
+
+        getImageSet () {
+            try {
+                if(!this.demensions.length) throw new Error('未设置文档信息： demensions');
+                if(!this.imageBaseUrl) throw new Error('未设置图片合同请求地址：imageBaseUrl')
+
+                class ContractImage {
+                    constructor(width, height, type, pageNumber, url) {
+                        this.width = width;
+                        this.height = height;
+                        this.type = type;
+                        this.pageNumber = pageNumber;
+                        this.url = url;
+                    }
+                }
+                this.demensions.forEach((demension, index) => {
+                    const pageNumber = index + 1;
+                    const url = `${this.imageBaseUrl}/${pageNumber}`
+                    const img = new ContractImage(demension.width, demension.height, demension.type, pageNumber, url);
+                    this.pages.push(img)
+                });
+                this.pageCount = this.demensions.length;
+                 this.$emit('document-rendered');
+            } catch (error) {
+                  console.log('%c⧭', 'color: #607339', error)
+                  this.$emit('document-render-error', error);
             }
         },
     },

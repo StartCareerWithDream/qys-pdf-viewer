@@ -1,10 +1,11 @@
 <template>
     <div id="app">
-        <input type="text"
-               v-model="id">
-        <pdf url="/js/2018-ebook-engineer.pdf"
+        <pdf url="/js/ES6.pdf"
              watermark-text="杨旺旺 2019-07-02 08:08:00 9015"
              visible-header
+             is-image
+             image-base-url="/document/image"
+             v-bind="{ demensions }"
              @on-drop="onDrop"
              @on-drag-over="onDrop"
              @on-drag-leave="onDrop"
@@ -18,14 +19,14 @@ import Pdf from './components/pdf-container'
 
 export default {
     name: 'app',
-    data () {
-        return {
-            url: '',
-            id: '2619128405097267756'
-        }
-    },
     components: {
         Pdf
+    },
+
+    data() {
+        return {
+           demensions: [{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842},{"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.0#842.0","width":210,"height":297,"pixelWidth":595,"pixelHeight":842}]
+        }
     },
   
     methods: {

@@ -1,15 +1,15 @@
 <template>
     <div class="pdf-document">
         <scroll-document v-if="pages.length"
-                         v-bind="{ pages, pageCount, currentPage, scale, maxWidth }"
+                         v-bind="{ pages, pageCount, currentPage, scale, maxWidth, isImage, demensions }"
                          v-slot="{ page, scale }"
                          v-on="$listeners">
-            <pdf-page-content v-bind="{ page, scale, currentPage, onlyCanvas, watermarkText, maxWidth }"
+           <component :is="componentName" v-bind="{ page, scale, currentPage, onlyCanvas, watermarkText, maxWidth }"
                               v-on="$listeners">
                 <template v-slot="scope">
                     <slot v-bind="scope"></slot>
                 </template>
-            </pdf-page-content>
+           </component>
         </scroll-document>
         <pdf-skeleton class="empty-page" v-else></pdf-skeleton>
     </div>
@@ -18,10 +18,16 @@
 <script>
 import ScrollDocument from './pdf-scroll-document';
 import PdfPageContent from './pdf-page-content';
+import PdfPageImage from './pdf-page-image';
 import PdfSkeleton from './pdf-skeleton'
 
 export default {
     name: 'PdfDocument',
+    computed: {
+        componentName() {
+            return this.isImage ? 'PdfPageImage' : 'PdfPageContent'
+        },
+    },
     props: {
         pages: Array,
         pageCount: Number,
@@ -29,9 +35,11 @@ export default {
         currentPage: Number,
         onlyCanvas: Boolean,
         watermarkText: String,
-        maxWidth: Number
+        maxWidth: Number,
+        isImage: Boolean,
+        demensions: Array
     },
-    components: { ScrollDocument, PdfPageContent, PdfSkeleton },
+    components: { ScrollDocument, PdfPageContent, PdfSkeleton, PdfPageImage },
 };
 </script>
 
@@ -40,7 +48,7 @@ export default {
     height: 100%;
 
     .empty-page {
-        width: 793px;
+        width: 800px;
         height: 1100px;
         margin: 0 auto;
         background: #fff;

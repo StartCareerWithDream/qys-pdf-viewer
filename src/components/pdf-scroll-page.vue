@@ -3,107 +3,122 @@
          :style="elementStyle"
          ref="pdf-scroll-page">
         <slot v-bind="{ page, scale }"></slot>
-        <pdf-skeleton v-if="showSkeleton"></pdf-skeleton>
         <span class="page-number-content">{{pageNumber}}</span>
     </div>
 </template>
 
 <script>
-import PdfSkeleton from './pdf-skeleton'
+import { clone } from '../utils/base';
 
 export default {
-  components: { PdfSkeleton },
-  name: 'PdfScrollPage',
-  props: {
-    page: Object,
-    scrollTop: Number,
-    clientHeight: Number,
-    currentPage: Number,
-    scale: Number,
-    isToBottom: Boolean,
-    maxWidth: Number
-  },
-  data() {
-    return {
-      offsetHeight: 0,
-      offsetTop: 0,
-      clientWidth: 0,
-      showSkeleton: true
-    };
-  },
-  mounted() {
-    this.updateElementBounds();
-  },
-  computed: {
-    pageNumber() {
-      return this.page.pageNumber || 0;
+    name: 'PdfScrollPage',
+    props: {
+        page: Object,
+        scrollTop: Number,
+        clientHeight: Number,
+        currentPage: Number,
+        scale: Number,
+        isToBottom: Boolean,
+        maxWidth: Number,
+        isImage: Boolean
     },
-    // 是否聚焦当前页
-    isFocus() {
-      const {
-        offsetTop, bottom, offsetHeight, scrollTop, clientHeight,
-      } = this;
-      if (!offsetHeight) return false;
+    data () {
+        return {
+            offsetHeight: 0,
+            offsetTop: 0,
+            clientWidth: 0,
+            isScroll: false,
+        };
+    },
+    mounted () {
+        this.updateElementBounds();
+    },
+    computed: {
+        pageNumber () {
+            return this.page.pageNumber || 0;
+        },
+        // 是否聚焦当前页
+        isFocus () {
+            const { offsetTop, bottom, offsetHeight, scrollTop, clientHeight } = this;
+            if (!offsetHeight) return;
 
-      const halfHeight = (offsetHeight / 2);
-      const halfScreen = (clientHeight / 2);
-      const delta = offsetHeight >= halfScreen ? halfScreen : halfHeight;
-      const threshold = scrollTop + delta * 2;
-      const direction = this.isToBottom ? bottom >= threshold : bottom >= scrollTop
-      return offsetTop < threshold  && direction;
-    },
+            const halfHeight = (offsetHeight / 2);
+            const halfScreen = (clientHeight / 2);
+            const delta = offsetHeight >= halfScreen ? halfScreen : halfHeight;
+            const threshold = scrollTop + delta;
 
-    bottom() {
-      return this.offsetTop + this.offsetHeight;
-    },
+            return offsetTop < threshold && bottom >= threshold;
+        },
 
-    viewport() {
-      const cssDpi = 96 / 72;
-      const scale = this.scale * cssDpi;
-      const viewport = this.page.getViewport({ scale }).clone({ scale });
-      return viewport;
-    },
+        bottom () {
+            return this.offsetTop + this.offsetHeight;
+        },
 
-    elementStyle() {
-      let { height, width } = this.viewport;
-      height = this.maxWidth / width * height;
-      return { height: `${height}px`, width: `${this.maxWidth}px` };
-    },
+        viewport () {
+            const cssDpi = 96 / 72;
+            const scale = this.scale * cssDpi;
+            const page = clone(this.page)
+            const viewport = this.isImage ? this.getImageViewport(page, scale) :
+                page.getViewport({ scale }).clone({ scale });
+            return viewport;
+        },
 
-    scrollBottom() {
-      return this.scrollTop + this.clientHeight;
-    },
-  },
-  watch: {
-    isFocus: {
-      handler(nv) {
-        if (nv) {
-            this.$listeners['update-page-number'] && this.$listeners['update-page-number'](this.pageNumber)
+        elementStyle () {
+            let { height, width } = this.viewport;
+            height = this.maxWidth / width * height;
+            if(this.maxWidth > width) {
+              width = this.maxWidth;
+            }
+            return { height: `${height}px`, width: `${width}px` };
+        },
+
+        scrollBottom () {
+            return this.scrollTop + this.clientHeight;
+        },
+
+        isFocusNo () {
+            return this.currentPage === this.pageNumber
         }
-      },
     },
-    currentPage: {
-      handler(nv) {
-        if (this.pageNumber === nv) {
-          if (this.isFocus) return;
-          this.$emit('update-scroll-top', this.offsetTop);
-        }
-      },
+    watch: {
+        isFocusNo: {
+            handler (nv) {
+                if (nv) this.updatePageNumber()
+            },
+        },
+        isFocus (nv) {
+            nv && this.$listeners['update-page-number'] && this.$listeners['update-page-number'](this.pageNumber);
+        },
+        scale: 'updateElementBounds'
     },
-  },
-  methods: {
-    /** 更新元素高度 */
-    updateElementBounds() {
-      const { offsetTop, offsetHeight, clientWidth } = this.$el;
-      this.offsetTop = offsetTop;
-      this.offsetHeight = offsetHeight;
-      this.clientWidth = clientWidth;
-    },
+    methods: {
+        updatePageNumber () {
+            if (this.isFocus) return;
+            this.onUpdateScrollTop();
+        },
 
-    triggerSkeleton(visible) {
-      this.showSkeleton = visible;
-    }
-  },
+        getImageViewport (demension, scale) {
+            let { width = 0, height = 0 } = demension;
+            width = width * scale;
+            height = height * scale;
+            console.log('%c⧭', 'color: #86bf60', width, height)
+            return Object.assign(demension, { width, height })
+        },
+
+        /** 更新元素高度 */
+        updateElementBounds () {
+            this.$nextTick(() => {
+                const { offsetTop = 0, offsetHeight = 0, clientWidth = 0 } = this.$el || {};
+                this.offsetTop = offsetTop;
+                this.offsetHeight = offsetHeight;
+                this.clientWidth = clientWidth;
+            })
+        },
+
+        onUpdateScrollTop () {
+            this.$emit('update-scroll-top', this.offsetTop);
+        }
+    },
 };
 </script>
 
@@ -115,16 +130,16 @@ export default {
     background: #fff;
 
     &:before {
-      content: '';
-      display: block;
-      border-bottom: 24px solid #ccc;
-      border-right: 24px solid #ccc;
-      border-left: 24px solid transparent;
-      border-top: 24px solid transparent;
-      position: absolute;
-      bottom: -1px;
-      right: -1px;
-      z-index: 1;
+        content: "";
+        display: block;
+        border-bottom: 24px solid #ccc;
+        border-right: 24px solid #ccc;
+        border-left: 24px solid transparent;
+        border-top: 24px solid transparent;
+        position: absolute;
+        bottom: -1px;
+        right: -1px;
+        z-index: 1;
     }
 
     .page-number-content {
@@ -135,7 +150,5 @@ export default {
         color: #fff;
         user-select: none;
     }
-         
-    
 }
 </style>

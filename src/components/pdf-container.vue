@@ -1,20 +1,13 @@
 <template>
     <div class="pdf-viewer-container">
         <!-- 头部 -->
-        <div class="pdf-viewer-header"
-             v-if="visibleHeader">
-            <button @click="currentPage --;">-</button>
-            {{currentPage}}
-            <button @click="currentPage++;">+</button>
-            {{pageCount}}
+        <pdf-toolbar :scale.sync="scale"
+                     :current-page.sync="currentPage"
+                     v-bind="{ pageCount }" />
 
-            <button @click="scale -= 0.1">scale --</button>
-            <button @click="scale += 0.1">scale ++</button>
-            <slot name="header"></slot>
-        </div>
         <!-- 文档内容 -->
         <pdf-document class="pdf-viewer-body"
-                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText, maxWidth }"
+                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText, maxWidth, isImage, demensions }"
                       v-on="$listeners"
                       @update-page-number="updateCurrentPage">
             <template v-slot="scope">
@@ -27,42 +20,43 @@
 <script>
 import PdfData from './pdf-data';
 import PdfDocument from './pdf-document';
+import PdfToolbar from './pdf-toolbar'
 
 export default {
-    components: { PdfDocument },
+    components: { PdfDocument, PdfToolbar },
     name: 'PdfViewerContainer',
     mixins: [PdfData],
     data () {
         return {
+            focusPage: 1,
             currentPage: 1,
             scale: 1,
+            maxWidth: 800,
         };
     },
     props: {
-        visibleHeader: Boolean,
-        maxWidth: {
-            type: Number,
-            default: 800
-        }
+        visibleToolbar: Boolean,
     },
     watch: {
-        currentPage: {
+        scale: {
             handler (nv) {
-                if (nv && nv === this.pages.length) {
-                    this.fetchPages(nv + 1);
-                }
-            },
+                this.maxWidth = 800 * nv;
+            }
         },
     },
     methods: {
         /** 更新页码 */
         updateCurrentPage (pageNo) {
             this.currentPage = pageNo;
-        }
+        },
     },
 };
 </script>
 
+
+<style lang="less">
+@import url("//at.alicdn.com/t/font_577600_jtwrq1t5f.css");
+</style>
 <style lang="less" scoped>
 .pdf-viewer-container {
     display: flex;
