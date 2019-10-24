@@ -14,26 +14,31 @@ const pageRange = (start, end) => {
 export default {
     name: 'PdfData',
     props: {
-        url: String,
-        cMapUrl: {
+        url: String, // pdf文档流请求地址
+        cMapUrl: { // 字体解析包请求地址
             type: String,
             default: '/js/cmaps/'
         },
-        options: {
+        options: { // pdf基础配置
             type: Object,
             default: null
         },
-        onlyCanvas: {
+        onlyCanvas: { // 仅渲染canvas
             type: Boolean,
             default: true
         },
-        watermarkText: String,
-        demensions: {
+        watermarkText: String, // 水印文字
+        demensions: { // 渲染图片时的页面信息
             type: Array,
             default: () => { return [] }
         },
-        imageBaseUrl: String,
-        isImage: Boolean
+        documentDimension: { // 文档的基本信息
+            type: Object,
+            default: () => { return {"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.3#841.9","width":210,"height":297,"pixelWidth":595,"pixelHeight":842} }
+        },
+        imageBaseUrl: String, // 图片基本请求地址
+        isImage: Boolean, // 是否启用图片渲染模式
+        visibleToolbar: Boolean, // 显示工具栏
     },
     data () {
         return {
@@ -137,7 +142,7 @@ export default {
                 }
                 this.demensions.forEach((demension, index) => {
                     const pageNumber = index + 1;
-                    const url = `${this.imageBaseUrl}/${pageNumber}`
+                    const url = `${this.imageBaseUrl}&pageNo=${pageNumber}`
                     const img = new ContractImage(demension.width, demension.height, demension.type, pageNumber, url);
                     this.pages.push(img)
                 });

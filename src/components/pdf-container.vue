@@ -3,7 +3,7 @@
         <!-- 头部 -->
         <pdf-toolbar :scale.sync="scale"
                      :current-page.sync="currentPage"
-                     v-bind="{ pageCount }" />
+                     v-bind="{ pageCount, documentDimension }" />
 
         <!-- 文档内容 -->
         <pdf-document class="pdf-viewer-body"
@@ -33,9 +33,6 @@ export default {
             scale: 1,
             maxWidth: 800,
         };
-    },
-    props: {
-        visibleToolbar: Boolean,
     },
     watch: {
         scale: {

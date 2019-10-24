@@ -1,6 +1,6 @@
 <template>
     <div class="pdf-toolbar__content"
-         :style="{ width: visibleMore ? `800px` : '50px' }">
+         :style="{ width: visibleMore ? `800px` : '90px' }">
         <template v-if="visibleMore">
             <!-- 首页 -->
             <span class="toolbar__button"
@@ -46,7 +46,17 @@
                 <i class="iconfont icon-delete"></i>
             </span>
             <!-- 缩放比例 -->
-            <span class="toolbar__button">{{parseInt(scale * 100)}}%</span>
+            <span class="toolbar__button">
+                <span class="scale-content" @click="visibleScaleOption = !visibleScaleOption">
+                    {{scale | displayScale}} <i class="iconfont icon-down"></i> 
+                    <ul class="scale-option" :style="{ height: visibleScaleOption ? '144px':0 }" @click.stop>
+                        <li @click="handleScale('FIXATION', 1)">100%</li>
+                        <li @click="handleScale('FIXATION', 2)">200%</li>
+                        <li @click="handleScale('FIXATION', 3)">300%</li>
+                        <li @click="handleScale('FIXATION', 4)">400%</li>
+                    </ul>
+                </span>
+            </span>
             <!-- 放大 -->
             <span class="toolbar__button"
                   title="缩放"
@@ -71,8 +81,9 @@
 
             <div class="divider"></div>
 
+            <!-- 文档规格 -->
             <span class="toolbar__button document-info">
-                A4 {{PAPE_SPEC['A4']}}
+                {{pageSepc}}
             </span>
         </template>
 
@@ -84,21 +95,20 @@
 </template>
 
 <script>
-import { PAPE_SPEC } from '../utils/constants'
-
 export default {
     data () {
         return {
             visibleMore: false,
             pageNumber: 1,
             timeout: null,
-            PAPE_SPEC, // 纸张规格
+            visibleScaleOption: false
         }
     },
     props: {
         currentPage: Number,
         scale: Number,
-        pageCount: Number
+        pageCount: Number,
+        documentDimension: Object
     },
     watch: {
         currentPage: {
@@ -106,6 +116,25 @@ export default {
                 this.pageNumber = nv;
             },
         }
+    },
+    filters: {
+        displayScale(scale = 0) {
+            return parseInt(scale * 100) + '%' 
+        }
+    },
+    computed: {
+        // 纸张规格
+        pageSepc() {
+            const { type = {} } = this.documentDimension;
+            let { width = 0, height = 0, type: pageType = ''} = type;
+            let typeLabel =  pageType;
+            if(pageType === 'OTHER') {
+                typeLabel = '其他';
+                width = this.documentDimension.width;
+                height = this.documentDimension.height
+            }
+            return pageType ? `${typeLabel} ${width}mm * ${height}mm` : ''
+        },
     },
     methods: {
         // 节流
@@ -134,18 +163,20 @@ export default {
         },
 
         /** 处理缩放 */
-        handleScale (method) {
+        handleScale (method, value) {
             this.throttle(() => {
                 const steps = new Map([
                     ['ADD', 0.1],
-                    ['DELETE', -0.1]
+                    ['DELETE', -0.1],
+                    ['FIXATION', value]
                 ])
                 if (method === 'DELETE' && this.scale === 0.5) {
                     console.log('最小只能支持0.5倍大小')
                     return;
                 }
                 const step = steps.get(method);
-                const scale = this.scale + step;
+                const scale = method === 'FIXATION' ? step : this.scale + step;
+                this.visibleScaleOption = false;
                 this.$emit('update:scale', scale)
             }, 300)()
         },
@@ -191,12 +222,12 @@ export default {
     background: @pdf-toolbar__background;
     color: @pdf-toolbar__font;
     text-align: right;
-    overflow: hidden;
 
     position: fixed;
     bottom: 10%;
-    right: calc((100% - 800px) / 2);
+    right: e('calc((100% - 800px - 200px) / 2)');
     z-index: 1000;
+    white-space: nowrap;
 
     .document-info {
         color: @pdf-toolbar__info;
@@ -217,6 +248,33 @@ export default {
             color: @pdf-toolbar__font;
             outline: none;
             border: none;
+        }
+    }
+
+    .scale-content {
+        background: #000;
+        padding: 2px 6px;
+        position: relative;
+
+        .scale-option {
+            position: absolute;
+            bottom: 30px;
+            background: #fff;
+            width: 120px;
+            height: 0;
+            text-align: left;
+            color: #000;
+            padding: 0;
+            transition: all .1s;
+            overflow: hidden;
+            li {
+                list-style: none;
+                padding: 0 20px;
+                line-height: 36px;
+                &:hover {
+                    background: #f2f2f2;
+                }
+            }
         }
     }
 

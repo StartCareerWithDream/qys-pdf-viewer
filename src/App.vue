@@ -3,7 +3,6 @@
         <pdf url="/js/ES6.pdf"
              watermark-text="杨旺旺 2019-07-02 08:08:00 9015"
              visible-header
-             is-image
              image-base-url="/document/image"
              v-bind="{ demensions }"
              @on-drop="onDrop"

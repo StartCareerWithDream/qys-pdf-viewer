@@ -1,6 +1,6 @@
 {
   "name": "qys-pdf-viewer",
-  "version": "0.1.17",
+  "version": "0.1.20",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -12,7 +12,7 @@
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "lodash": "^4.17.15",
-    "qys-pdf": "^1.0.2",
+    "qys-pdf": "^1.0.3",
     "vue": "^2.6.10"
   },
   "devDependencies": {

@@ -57,9 +57,8 @@ export default {
         viewport () {
             const cssDpi = 96 / 72;
             const scale = this.scale * cssDpi;
-            const page = clone(this.page)
-            const viewport = this.isImage ? this.getImageViewport(page, scale) :
-                page.getViewport({ scale }).clone({ scale });
+            const viewport = this.isImage ? this.getImageViewport(clone(this.page), scale) :
+                this.page.getViewport({ scale }).clone({ scale });
             return viewport;
         },
 
@@ -97,11 +96,11 @@ export default {
             this.onUpdateScrollTop();
         },
 
+        /** 图片模式下获取 viewport */
         getImageViewport (demension, scale) {
             let { width = 0, height = 0 } = demension;
             width = width * scale;
             height = height * scale;
-            console.log('%c⧭', 'color: #86bf60', width, height)
             return Object.assign(demension, { width, height })
         },
 

@@ -5,14 +5,21 @@
 }
 </i18n>
 <template>
-    <div v-visible="renderCanvas">
+    <div class="pdf-page-image"
+         ondragstart='return false;'
+         @drop="$listeners['on-drop'] && $listeners['on-drop']($event, pageNumber)"
+         @dragover="$listeners['on-drag-over'] && $listeners['on-drag-over']($event, pageNumber)"
+         @dragleave="$listeners['on-drag-leave'] && $listeners['on-drag-leave']($event, pageNumber)">
         <canvas ref="canvas"
-                v-show="isLoaded"
+                v-visible="renderCanvas"
                 v-bind="{ ...canvasAttrs }"></canvas>
         <!-- 骨架屏 -->
         <pdf-skeleton v-if="!isLoaded"
                       :height="canvasAttrs.height"
                       :style="skeletonStyle"></pdf-skeleton>
+
+        <!-- slot -->
+        <slot v-bind="{ pageNumber }"></slot>
     </div>
 </template>
 
@@ -28,7 +35,8 @@ export default {
         page: Object,
         scale: Number,
         maxWidth: Number,
-        watermarkText: String
+        watermarkText: String,
+        currentPage: Number
     },
     directives: { visible },
     computed: {
@@ -36,14 +44,8 @@ export default {
             return this.page.pageNumber
         },
         viewport () {
-            const getImageViewport = function (demension, scale) {
-                let { width = 0, height = 0 } = demension;
-                width = width * scale;
-                height = height * scale;
-                return Object.assign(demension, { width, height })
-            };
             const page = clone(this.page)
-            return getImageViewport(page, this.scale)
+            return this.getImageViewport(page, this.scale)
         },
         canvasAttrs () {
             let { width, height } = this.viewport;
@@ -73,6 +75,13 @@ export default {
         }
     },
     methods: {
+        // 获取图片的ViewPort
+        getImageViewport(demension, scale) {
+            let { width = 0, height = 0 } = demension;
+            width = width * scale;
+            height = height * scale;
+            return Object.assign(demension, { width, height })
+        },
         /**
          * 绘制图片
          */
@@ -80,18 +89,26 @@ export default {
             this.$nextTick(() => {
                 const { width, height } = this.canvasAttrs;
                 let canvas = this.$refs['canvas'];
-                if(!canvas) return;
+                if (!canvas) return;
+                const drawImage = (ctx) => {
+                    ctx.save();
+                    ctx.drawImage(this.img, 0, 0, width, height);
+                    ctx.restore();
+                }
+
                 let ctx = canvas.getContext("2d");
                 canvas.width = width;
                 canvas.height = height;
                 if (this.img && this.isLoaded) return;
                 if (this.img) {
                     this.isLoaded = true;
+                    drawImage(ctx);
                     this.paintWaterMark(ctx);
                 } else {
                     this.img = new Image();
-                    this.img.src = this.page.src;
+                    this.img.src = this.page.url;
                     this.img.onload = () => {
+                        drawImage(ctx);
                         this.isLoaded = true;
                         this.paintWaterMark(ctx);
                     }
@@ -123,6 +140,10 @@ export default {
 <style lang="less" scoped>
 canvas {
     display: block;
+}
+
+.pdf-page-image {
+    position: relative;
 }
 </style>
 

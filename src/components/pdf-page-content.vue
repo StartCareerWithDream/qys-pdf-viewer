@@ -49,15 +49,16 @@ export default {
     },
     watch: {
         scale () {
-            this.updatePdfRender(true);
+            this.updatePdfRender();
         },
         // 处理当前页激活时渲染 10页前的页码销毁
         currentPage: {
             handler (nv) {
-                if (nv === this.pageNumber) {
+                const gap = nv - this.pageNumber;
+                if (-2 <= gap && gap <= 2) {
                     if (this.pdfViewer) {
                         // 判断重置过才更新
-                        // this.pdfViewer.renderingState === 0 && this.updatePdfRender()
+                        this.pdfViewer.renderingState === 0 && this.updatePdfRender(true)
                     } else { // 防止 v-visible 未触发
                         // 延迟1S 尽量保证使用 v-visible 触发
                         setTimeout(() => {
@@ -66,7 +67,7 @@ export default {
                     }
                 } else if (this.pageNumber <= nv - 10) {
                     // 渲染过才能重置
-                    // this.pdfViewer.renderingState === 3 && this.resetpdfViewer()
+                    this.pdfViewer && this.pdfViewer.renderingState === 3 && this.resetpdfViewer()
                 }
             },
         }
@@ -131,11 +132,11 @@ export default {
         },
 
         /** 更新 pdfscale */
-        updatePdfRender () {
+        updatePdfRender (init) {
             if (!this.pdfViewer) return;
             this.pdfViewer.update(this.optimalScale);
     
-            if (this.pageNumber === this.currentPage) {
+            if (init && this.loaded) {
                 this.pdfViewer.draw().then(() => {
                     // 绘制水印
                     if (this.watermarkText) {
@@ -159,7 +160,7 @@ export default {
         resetpdfViewer () {
             if (!this.pdfViewer) return;
             this.renderStatus = 2;
-            this.pdfViewer.reset();
+            this.pdfViewer.destroy();
         }
     },
     beforeDestroy () {
