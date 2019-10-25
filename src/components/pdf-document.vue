@@ -1,10 +1,11 @@
 <template>
     <div class="pdf-document">
         <scroll-document v-if="pages.length"
-                         v-bind="{ pages, pageCount, currentPage, scale, maxWidth, isImage, demensions }"
-                         v-slot="{ page, scale }"
+                         ref="scroll-document"
+                         v-bind="{ pages, pageCount, currentPage, scale, maxWidth, isImage, dimensions }"
+                         v-slot="{ page, scale, viewport, optimalScale, pageNumber }"
                          v-on="$listeners">
-           <component :is="componentName" v-bind="{ page, scale, currentPage, onlyCanvas, watermarkText, maxWidth }"
+           <component :is="componentName" v-bind="{ page, scale, currentPage, onlyCanvas, watermarkText, maxWidth, optimalScale, viewport, pageNumber }"
                               v-on="$listeners">
                 <template v-slot="scope">
                     <slot v-bind="scope"></slot>
@@ -37,9 +38,14 @@ export default {
         watermarkText: String,
         maxWidth: Number,
         isImage: Boolean,
-        demensions: Array
+        dimensions: Array
     },
     components: { ScrollDocument, PdfPageContent, PdfSkeleton, PdfPageImage },
+    methods: {
+        updateScrollTop(scroll) {
+            this.$refs['scroll-document'].onUpdateScrollTop(scroll);
+        }
+    }
 };
 </script>
 

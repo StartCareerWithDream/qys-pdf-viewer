@@ -2,7 +2,7 @@
     <div class="pdf-scroll-page"
          :style="elementStyle"
          ref="pdf-scroll-page">
-        <slot v-bind="{ page, scale }"></slot>
+        <slot v-bind="{ page, scale, optimalScale, viewport, pageNumber }"></slot>
         <span class="page-number-content">{{pageNumber}}</span>
     </div>
 </template>
@@ -53,30 +53,29 @@ export default {
         bottom () {
             return this.offsetTop + this.offsetHeight;
         },
-
+        // 页面viewport
         viewport () {
-            const cssDpi = 96 / 72;
-            const scale = this.scale * cssDpi;
+            const scale = 96 / 72;
             const viewport = this.isImage ? this.getImageViewport(clone(this.page), scale) :
                 this.page.getViewport({ scale }).clone({ scale });
             return viewport;
         },
-
+        // 元素样式
         elementStyle () {
             let { height, width } = this.viewport;
-            height = this.maxWidth / width * height;
-            if(this.maxWidth > width) {
-              width = this.maxWidth;
-            }
-            return { height: `${height}px`, width: `${width}px` };
+            return { height: `${height * this.optimalScale}px`, width: `${this.optimalScale * width}px` };
         },
-
+        // 当前页面相对底部的距离
         scrollBottom () {
             return this.scrollTop + this.clientHeight;
         },
-
+        // 当前页是否激活
         isFocusNo () {
             return this.currentPage === this.pageNumber
+        },
+        // 最佳缩放比例
+        optimalScale () {
+            return this.maxWidth / this.viewport.width;
         }
     },
     watch: {

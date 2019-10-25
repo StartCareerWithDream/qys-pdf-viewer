@@ -28,13 +28,17 @@ export default {
             default: true
         },
         watermarkText: String, // 水印文字
-        demensions: { // 渲染图片时的页面信息
+        dimensions: { // 渲染图片时的页面信息
             type: Array,
             default: () => { return [] }
         },
+        defaultMaxWidth: {
+            type: Number,
+            default: 800
+        },
         documentDimension: { // 文档的基本信息
             type: Object,
-            default: () => { return {"type":{"width":210,"height":297,"type":"A4"},"dimensionStr":"595.3#841.9","width":210,"height":297,"pixelWidth":595,"pixelHeight":842} }
+            default: () => { return {"type":{"width":210,"height":297,"type":"A4"},"width":210,"height":297,"pixelWidth":595,"pixelHeight":842} }
         },
         imageBaseUrl: String, // 图片基本请求地址
         isImage: Boolean, // 是否启用图片渲染模式
@@ -128,7 +132,7 @@ export default {
 
         getImageSet () {
             try {
-                if(!this.demensions.length) throw new Error('未设置文档信息： demensions');
+                if(!this.dimensions.length) throw new Error('未设置文档信息： dimensions');
                 if(!this.imageBaseUrl) throw new Error('未设置图片合同请求地址：imageBaseUrl')
 
                 class ContractImage {
@@ -140,13 +144,13 @@ export default {
                         this.url = url;
                     }
                 }
-                this.demensions.forEach((demension, index) => {
+                this.dimensions.forEach((demension, index) => {
                     const pageNumber = index + 1;
                     const url = `${this.imageBaseUrl}&pageNo=${pageNumber}`
                     const img = new ContractImage(demension.width, demension.height, demension.type, pageNumber, url);
                     this.pages.push(img)
                 });
-                this.pageCount = this.demensions.length;
+                this.pageCount = this.dimensions.length;
                  this.$emit('document-rendered');
             } catch (error) {
                   console.log('%c⧭', 'color: #607339', error)

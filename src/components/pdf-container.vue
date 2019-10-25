@@ -7,7 +7,8 @@
 
         <!-- 文档内容 -->
         <pdf-document class="pdf-viewer-body"
-                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText, maxWidth, isImage, demensions }"
+                      ref="pdf-document"
+                      v-bind="{ pages, pageCount, currentPage, scale, onlyCanvas, watermarkText, maxWidth, isImage, dimensions }"
                       v-on="$listeners"
                       @update-page-number="updateCurrentPage">
             <template v-slot="scope">
@@ -35,9 +36,16 @@ export default {
         };
     },
     watch: {
+        defaultMaxWidth: {
+            handler(nv) {
+                this.maxWidth = nv;
+            },
+            immediate: true
+        },
         scale: {
-            handler (nv) {
-                this.maxWidth = 800 * nv;
+            handler (nv = 1) {
+                this.maxWidth = this.defaultMaxWidth * nv;
+                this.$emit('scale-change', parseInt(nv * 100) / 100);
             }
         },
     },
@@ -46,19 +54,23 @@ export default {
         updateCurrentPage (pageNo) {
             this.currentPage = pageNo;
         },
+
+        updateScrollTop(scrollTop) {
+            this.$refs['pdf-document'].updateScrollTop(scrollTop)
+        },
     },
 };
 </script>
 
 
 <style lang="less">
-@import url("//at.alicdn.com/t/font_577600_jtwrq1t5f.css");
+@import url("../fonts/iconfont.css");
 </style>
 <style lang="less" scoped>
 .pdf-viewer-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
     margin: 0 auto;
     justify-items: center;
 }

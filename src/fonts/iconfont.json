@@ -1,0 +1,65 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "17166976",
+      "name": "Big",
+      "font_class": "add",
+      "unicode": "e6b5",
+      "unicode_decimal": 59061
+    },
+    {
+      "icon_id": "17166979",
+      "name": "small",
+      "font_class": "delete",
+      "unicode": "e6bf",
+      "unicode_decimal": 59071
+    },
+    {
+      "icon_id": "44468935",
+      "name": "first-circle-o",
+      "font_class": "first-circle-o-",
+      "unicode": "e97d",
+      "unicode_decimal": 59773
+    },
+    {
+      "icon_id": "44468936",
+      "name": "last-circle-o",
+      "font_class": "last-circle-o-",
+      "unicode": "e97e",
+      "unicode_decimal": 59774
+    },
+    {
+      "icon_id": "44468937",
+      "name": "infeed-develop-o",
+      "font_class": "infeed-develop-o-",
+      "unicode": "e97f",
+      "unicode_decimal": 59775
+    },
+    {
+      "icon_id": "44468938",
+      "name": "vertical-develop-o",
+      "font_class": "vertical-develop-o-",
+      "unicode": "e980",
+      "unicode_decimal": 59776
+    },
+    {
+      "icon_id": "38726461",
+      "name": "right-circle-o",
+      "font_class": "right-circle-o",
+      "unicode": "e90f",
+      "unicode_decimal": 59663
+    },
+    {
+      "icon_id": "38726462",
+      "name": "left-circle-o",
+      "font_class": "left-circle-o",
+      "unicode": "e910",
+      "unicode_decimal": 59664
+    }
+  ]
+}

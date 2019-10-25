@@ -5,28 +5,27 @@
 }
 </i18n>
 <template>
-    <div class="pdf-page-image"
+    <div class="pdf-page-image pdf-page-content"
+         v-visible="renderCanvas"
          ondragstart='return false;'
          @drop="$listeners['on-drop'] && $listeners['on-drop']($event, pageNumber)"
          @dragover="$listeners['on-drag-over'] && $listeners['on-drag-over']($event, pageNumber)"
          @dragleave="$listeners['on-drag-leave'] && $listeners['on-drag-leave']($event, pageNumber)">
         <canvas ref="canvas"
-                v-visible="renderCanvas"
-                v-bind="{ ...canvasAttrs }"></canvas>
+                v-show="isLoaded"></canvas>
         <!-- 骨架屏 -->
-        <pdf-skeleton v-if="!isLoaded"
+        <pdf-skeleton v-if="visibleSkeleton"
                       :height="canvasAttrs.height"
                       :style="skeletonStyle"></pdf-skeleton>
 
         <!-- slot -->
-        <slot v-bind="{ pageNumber }"></slot>
+        <slot v-bind="{ pageNumber, scale, optimalScale }"></slot>
     </div>
 </template>
 
 <script>
 import PdfSkeleton from './pdf-skeleton';
 import visible from '../directives/visible';
-import { clone } from '../utils/base';
 
 export default {
     name: 'ContractCanvas',
@@ -36,16 +35,16 @@ export default {
         scale: Number,
         maxWidth: Number,
         watermarkText: String,
-        currentPage: Number
+        currentPage: Number,
+        pageNumber: Number,
+        viewport: Object,
+        optimalScale: Number
     },
     directives: { visible },
     computed: {
-        pageNumber () {
-            return this.page.pageNumber
-        },
-        viewport () {
-            const page = clone(this.page)
-            return this.getImageViewport(page, this.scale)
+        visibleSkeleton() {
+            const gap = this.currentPage - this.pageNumber;
+            return !this.isLoaded && gap >= -2 && gap <= 2
         },
         canvasAttrs () {
             let { width, height } = this.viewport;
@@ -62,7 +61,31 @@ export default {
                 width = this.maxWidth;
             }
             return { height: `${height}px`, width: `${width}px` };
+        }
+    },
+    watch: {
+        currentPage: {
+            handler(nv) {
+                if(nv === this.pageNumber) {
+                    this.renderCanvas();
+                }
+            },
+            immediate: true
         },
+        // canvas在宽高发生改变是会清空内容 所以此处使用drawImage重新渲染， 也可使用 getImageData putImageData配合使用
+        canvasAttrs: {
+            handler(nv) {
+                if(this.img && this.canvas) {
+                    const { width , height } = nv;
+                    this.canvas.width = width;
+                    this.canvas.height = height;
+                    const cxt = this.canvas.getContext('2d');
+                    cxt.drawImage(this.img, 0, 0, width, height);
+                    this.paintWaterMark(cxt);
+                }
+            },
+            deep: true
+        }
     },
     data () {
         return {
@@ -71,44 +94,31 @@ export default {
             widthChange: false,
             isLoaded: false,
             throttledScroll: null,
-            scrollTop: 0
+            scrollTop: 0,
+            canvas: null
         }
     },
     methods: {
-        // 获取图片的ViewPort
-        getImageViewport(demension, scale) {
-            let { width = 0, height = 0 } = demension;
-            width = width * scale;
-            height = height * scale;
-            return Object.assign(demension, { width, height })
-        },
         /**
          * 绘制图片
          */
         renderCanvas () {
             this.$nextTick(() => {
+                if (this.img && this.isLoaded) return;
                 const { width, height } = this.canvasAttrs;
                 let canvas = this.$refs['canvas'];
-                if (!canvas) return;
-                const drawImage = (ctx) => {
-                    ctx.save();
-                    ctx.drawImage(this.img, 0, 0, width, height);
-                    ctx.restore();
-                }
-
+                if(!canvas) return;
+                this.canvas = canvas;
                 let ctx = canvas.getContext("2d");
                 canvas.width = width;
                 canvas.height = height;
-                if (this.img && this.isLoaded) return;
-                if (this.img) {
-                    this.isLoaded = true;
-                    drawImage(ctx);
-                    this.paintWaterMark(ctx);
-                } else {
+                if (!this.img) {  
                     this.img = new Image();
                     this.img.src = this.page.url;
                     this.img.onload = () => {
-                        drawImage(ctx);
+                        ctx.save();
+                        ctx.drawImage(this.img, 0, 0, width, height);
+                        ctx.restore();
                         this.isLoaded = true;
                         this.paintWaterMark(ctx);
                     }
@@ -116,14 +126,21 @@ export default {
                         this.img = null;
                     }
                 }
-            });
+            })
+        },
+
+        clearCanvas() {
+            let { width, height } = this.canvasAttrs;
+            let ctx = this.canvas.getContext('2d');
+            ctx.clearRect(0, 0, width, height);
         },
 
         /**
         * 绘制水印
         */
         paintWaterMark (ctx) {
-            ctx.font = '24px Microsoft YaHei';
+            if(!this.watermarkText) return;
+            ctx.font = '18px Microsoft YaHei';
             ctx.fillStyle = 'rgba(211, 210, 211, 0.3';
             for (let i = 0; i < 100; i++) {
                 ctx.save();

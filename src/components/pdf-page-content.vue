@@ -6,7 +6,7 @@
             @drop="$listeners['on-drop'] && $listeners['on-drop']($event, pageNumber)"
             @dragover="$listeners['on-drag-over'] && $listeners['on-drag-over']($event, pageNumber)"
             @dragleave="$listeners['on-drag-leave'] && $listeners['on-drag-leave']($event, pageNumber)">
-            <slot v-bind="{ pageNumber }"></slot>
+            <slot v-bind="{ pageNumber, scale, optimalScale }"></slot>
         </div>
 </template>
 
@@ -24,7 +24,10 @@ export default {
         currentPage: Number,
         onlyCanvas: Boolean,
         watermarkText: String,
-        maxWidth: Number
+        maxWidth: Number,
+        pageNumber: Number,
+        viewport: Object,
+        optimalScale: Number
     },
     data () {
         return {
@@ -33,23 +36,9 @@ export default {
             loaded: false
         };
     },
-    computed: {
-        pageNumber () {
-            return this.page.pageNumber || 0;
-        },
-        viewport () {
-            const cssDpi = 96 / 72;
-            let scale = this.scale * cssDpi;
-            const viewport = this.page.getViewport({ scale }).clone({ scale });
-            return viewport;
-        },
-        optimalScale () {
-            return this.maxWidth / this.viewport.width * this.scale;
-        }
-    },
     watch: {
         scale () {
-            this.updatePdfRender();
+            this.updatePdfRender(true);
         },
         // 处理当前页激活时渲染 10页前的页码销毁
         currentPage: {
@@ -78,7 +67,8 @@ export default {
         * 绘制水印
         */
         paintWaterMark (ctx) {
-            ctx.font = '24px Microsoft YaHei';
+            if(!this.watermarkText) return;
+            ctx.font = '18px Microsoft YaHei';
             ctx.fillStyle = 'rgba(211, 210, 211, 0.3';
             for (let i = 0; i < 100; i++) {
                 ctx.save();
@@ -136,7 +126,7 @@ export default {
             if (!this.pdfViewer) return;
             this.pdfViewer.update(this.optimalScale);
     
-            if (init && this.loaded) {
+            if (init && this.loaded && this.currentPage === this.pageNumber) {
                 this.pdfViewer.draw().then(() => {
                     // 绘制水印
                     if (this.watermarkText) {

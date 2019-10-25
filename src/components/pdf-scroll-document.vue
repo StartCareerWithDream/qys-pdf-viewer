@@ -29,7 +29,7 @@ export default {
         scale: Number,
         maxWidth: Number,
         isImage: Boolean,
-        demensions: Array
+        dimensions: Array
     },
     data () {
         return {

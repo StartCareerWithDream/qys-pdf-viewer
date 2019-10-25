@@ -1,6 +1,6 @@
 <template>
     <div class="pdf-toolbar__content"
-         :style="{ width: visibleMore ? `800px` : '90px' }">
+         :style="{ width: visibleMore ? `800px` : '90px', overflow: overflowStyle }">
         <template v-if="visibleMore">
             <!-- 首页 -->
             <span class="toolbar__button"
@@ -14,7 +14,7 @@
                   :class="{'disabled': this.pageNumber === 1}"
                   @click="handleJumpPage('DELETE')"
                   title="上一页">
-                <i class="iconfont icon-left"></i>
+                <i class="iconfont icon-left-circle-o"></i>
             </span>
             <!-- 页码 -->
             <span class="toolbar__button pagination-content">
@@ -27,7 +27,7 @@
                   title="下一页"
                   :class="{'disabled': this.pageNumber === this.pageCount}"
                   @click="handleJumpPage('ADD')">
-                <i class="iconfont icon-rignt"></i>
+                <i class="iconfont icon-right-circle-o"></i>
             </span>
             <!-- 末页 -->
             <span class="toolbar__button"
@@ -47,9 +47,12 @@
             </span>
             <!-- 缩放比例 -->
             <span class="toolbar__button">
-                <span class="scale-content" @click="visibleScaleOption = !visibleScaleOption">
-                    {{scale | displayScale}} <i class="iconfont icon-down"></i> 
-                    <ul class="scale-option" :style="{ height: visibleScaleOption ? '144px':0 }" @click.stop>
+                <span class="scale-content"
+                      @click="visibleScaleOption = !visibleScaleOption">
+                    {{scale | displayScale}} <i class="iconfont icon-down"></i>
+                    <ul class="scale-option"
+                        :style="{ height: visibleScaleOption ? '144px':0 }"
+                        @click.stop>
                         <li @click="handleScale('FIXATION', 1)">100%</li>
                         <li @click="handleScale('FIXATION', 2)">200%</li>
                         <li @click="handleScale('FIXATION', 3)">300%</li>
@@ -101,7 +104,8 @@ export default {
             visibleMore: false,
             pageNumber: 1,
             timeout: null,
-            visibleScaleOption: false
+            visibleScaleOption: false,
+            overflowStyle: 'hidden'
         }
     },
     props: {
@@ -118,22 +122,25 @@ export default {
         }
     },
     filters: {
-        displayScale(scale = 0) {
-            return parseInt(scale * 100) + '%' 
+        displayScale (scale = 0) {
+            return parseInt(scale * 100) + '%'
         }
     },
     computed: {
         // 纸张规格
-        pageSepc() {
+        pageSepc () {
             const { type = {} } = this.documentDimension;
-            let { width = 0, height = 0, type: pageType = ''} = type;
-            let typeLabel =  pageType;
-            if(pageType === 'OTHER') {
-                typeLabel = '其他';
+            let { width = 0, height = 0, type: pageType = '' } = type;
+            let typeLabel = pageType;
+            if (pageType === 'OTHER' || !pageType) {
+                typeLabel = pageType ? '其他' : this.documentDimension.type;
                 width = this.documentDimension.width;
                 height = this.documentDimension.height
             }
-            return pageType ? `${typeLabel} ${width}mm * ${height}mm` : ''
+            if(typeLabel.includes('_LANDSCAPE')) {
+                typeLabel = typeLabel.split('_')[0]
+            }
+            return typeLabel ? `${typeLabel} ${width}mm * ${height}mm` : ''
         },
     },
     methods: {
@@ -151,6 +158,15 @@ export default {
 
         triggerVisible () {
             this.visibleMore = !this.visibleMore;
+            this.visibleScaleOption = false;
+            // 动态改变 overflow 不好的实现
+            if (this.visibleMore) {
+                setTimeout(() => {
+                    this.overflowStyle = 'visible';
+                }, 400)
+            } else {
+                this.overflowStyle = 'hidden';
+            }
         },
 
         handleAutoScale (type = 'WIDTH') {
@@ -225,7 +241,7 @@ export default {
 
     position: fixed;
     bottom: 10%;
-    right: e('calc((100% - 800px - 200px) / 2)');
+    right: e("calc((100% - 800px - 200px) / 2)");
     z-index: 1000;
     white-space: nowrap;
 
@@ -258,15 +274,17 @@ export default {
 
         .scale-option {
             position: absolute;
-            bottom: 30px;
+            bottom: 40px;
+            left: -40px;
             background: #fff;
             width: 120px;
             height: 0;
-            text-align: left;
+            text-align: center;
             color: #000;
             padding: 0;
-            transition: all .1s;
+            transition: all 0.1s;
             overflow: hidden;
+            box-shadow: 1px 0px 5px rgba(0, 0, 0, 0.2);
             li {
                 list-style: none;
                 padding: 0 20px;
