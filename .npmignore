@@ -1,11 +1,13 @@
 .DS_Store
+.cache-loader
 node_modules
-/dist
-public
+/public
 /src/App.vue
 /src/main.js
 vue.config.js
 yarn.lock
+/src
+/build
 
 
 # local env files

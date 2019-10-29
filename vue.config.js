@@ -1,5 +1,6 @@
 
 var CopyWebpackPlugin = require("copy-webpack-plugin")
+const path = require("path")
 
 module.exports = {
     // devServer: {
@@ -7,7 +8,7 @@ module.exports = {
     //     open: true,
     //     proxy: 'http://privapp.qiyuesuo.cn'
     // },
-    baseUrl: '/',
+    publicPath: '/',
     runtimeCompiler: true,
     productionSourceMap: false,
     configureWebpack: {
@@ -18,6 +19,18 @@ module.exports = {
                     to: 'cmaps'
                 }
             ])
-        ]
+        ],
+        output: {
+            path: path.resolve(__dirname, './dist'),
+            filename: '[name].js',
+            libraryTarget: 'umd'
+        },
+        entry: {
+            'pdf-viewer': path.resolve('./src/index.js')
+        },
+        externals:{
+            vue: 'vue',
+            'qys-pdf':'qys-pdf'
+        }
     }
 };

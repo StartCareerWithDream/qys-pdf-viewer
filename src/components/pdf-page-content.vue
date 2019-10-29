@@ -12,9 +12,11 @@
 
 <script>
 import visible from '../directives/visible';
-import * as pdfjsViewer from 'qys-pdf/web/pdf_viewer';
 import PdfSkeleton from './pdf-skeleton'
 import Vue from 'vue'
+
+const pdfjsViewer = require('qys-pdf/web/pdf_viewer');
+
 
 export default {
     name: 'PdfPageContent',
@@ -33,7 +35,7 @@ export default {
         return {
             pdfViewer: null,
             renderStatus: 0, // 0 未渲染 1 已渲染 2 已重置
-            loaded: false
+            loaded: false,
         };
     },
     watch: {
@@ -54,7 +56,7 @@ export default {
                             this.renderPdf()
                         }, 500)
                     }
-                } else if (this.pageNumber <= nv - 10) {
+                } else if (this.pageNumber <= nv - 5) {
                     // 渲染过才能重置
                     this.pdfViewer && this.pdfViewer.renderingState === 3 && this.resetpdfViewer()
                 }
@@ -97,7 +99,6 @@ export default {
                 defaultViewport: this.page.getViewport(this.optimalScale),
                 textLayerFactory: this.onlyCanvas ? null : new pdfjsViewer.DefaultTextLayerFactory(),
                 annotationLayerFactory: this.onlyCanvas ? null : new pdfjsViewer.DefaultAnnotationLayerFactory(),
-                renderer: 'canvas'
             });
 
             this.pdfViewer.setPdfPage(this.page);
@@ -125,8 +126,9 @@ export default {
         updatePdfRender (init) {
             if (!this.pdfViewer) return;
             this.pdfViewer.update(this.optimalScale);
-    
-            if (init && this.loaded && this.currentPage === this.pageNumber) {
+
+            const gap = this.currentPage - this.pageNumber;
+            if (init && this.loaded && -1 <= gap && gap <= 1) {
                 this.pdfViewer.draw().then(() => {
                     // 绘制水印
                     if (this.watermarkText) {
@@ -149,8 +151,7 @@ export default {
         /** 重置渲染实例 销毁DOM节点 */
         resetpdfViewer () {
             if (!this.pdfViewer) return;
-            this.renderStatus = 2;
-            this.pdfViewer.destroy();
+            this.pdfViewer.reset(false, false, true);
         }
     },
     beforeDestroy () {

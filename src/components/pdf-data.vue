@@ -1,6 +1,6 @@
 <script>
-import * as pdfjsLib from 'qys-pdf/webpack';
 import 'qys-pdf/web/pdf_viewer.css';
+const pdfjsLib = require('qys-pdf/webpack');
 
 /** 快速生成数组 */
 const pageRange = (start, end) => {

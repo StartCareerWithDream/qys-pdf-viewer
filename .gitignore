@@ -1,8 +1,9 @@
 .DS_Store
 node_modules
-/dist
+dist
 public
 yarn.lock
+.cache-loader
 
 
 # local env files
