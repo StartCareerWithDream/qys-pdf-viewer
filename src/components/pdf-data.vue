@@ -1,6 +1,6 @@
 <script>
 import 'qys-pdf/web/pdf_viewer.css';
-const pdfjsLib = require('qys-pdf/webpack');
+const pdfjsLib = require('qys-pdf/webpack')
 
 /** 快速生成数组 */
 const pageRange = (start, end) => {
@@ -120,10 +120,7 @@ export default {
             try {
                 if (!this.pageCount) return;
                 if (this.pageCount && this.pageCount === this.pages.length) return;
-                // const start = this.pages.length + 1;
-                // const endNo = Math.min(Math.max(pageNo, (pageNo + PAGE_SIZE)), this.pageCount);
                 const partsOfPages = await this.getPages(this.pdfDocument, 1, this.pageCount);
-                // this.pages.splice(0, 0, ...partsOfPages);
                 this.pages = partsOfPages;
             } catch (error) {
                 console.log(error);
@@ -153,7 +150,6 @@ export default {
                 this.pageCount = this.dimensions.length;
                  this.$emit('document-rendered');
             } catch (error) {
-                  console.log('%c⧭', 'color: #607339', error)
                   this.$emit('document-render-error', error);
             }
         },

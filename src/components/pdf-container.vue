@@ -25,7 +25,7 @@ import PdfToolbar from './pdf-toolbar'
 
 export default {
     components: { PdfDocument, PdfToolbar },
-    name: 'PdfViewerContainer',
+    name: 'QysPdfViewer',
     mixins: [PdfData],
     data () {
         return {

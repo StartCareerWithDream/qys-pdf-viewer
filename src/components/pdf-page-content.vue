@@ -13,10 +13,8 @@
 <script>
 import visible from '../directives/visible';
 import PdfSkeleton from './pdf-skeleton'
-import Vue from 'vue'
-
-const pdfjsViewer = require('qys-pdf/web/pdf_viewer');
-
+import Vue from 'vue';
+const pdfjsViewer = require('qys-pdf/web/pdf_viewer')
 
 export default {
     name: 'PdfPageContent',

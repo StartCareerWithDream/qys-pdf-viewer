@@ -39,10 +39,6 @@ module.exports = merge(baseConfig, {
     mode: 'development',
     output: {
         publicPath: "/",
-        globalObject: "this"
-    },
-    node: {
-        fs: "empty"
     },
     devServer: {
         clientLogLevel: 'error',
