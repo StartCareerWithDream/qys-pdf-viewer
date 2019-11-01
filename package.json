@@ -1,6 +1,6 @@
 {
   "name": "qys-pdf-viewer",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build:cli": "vue-cli-service build",
@@ -11,7 +11,7 @@
   "dependencies": {
     "intersection-observer": "^0.7.0",
     "lodash": "^4.17.15",
-    "qys-pdf": "^1.0.5",
+    "qys-pdf": "^1.0.6",
     "vue": "^2.6.10"
   },
   "devDependencies": {
