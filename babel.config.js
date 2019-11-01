@@ -5,9 +5,15 @@ module.exports = function (api) {
       ["@babel/env", { "modules": false }],
       "@vue/babel-preset-jsx"
   ];
+  const plugins = [
+      "@babel/transform-runtime",
+      "@babel/syntax-dynamic-import",
+      "@babel/plugin-proposal-class-properties"
+  ];
 
 
   return {
-      presets
+      presets,
+      plugins
   };
 }
